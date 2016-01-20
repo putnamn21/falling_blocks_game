@@ -1,0 +1,152 @@
+<!doctype HTML>
+<html>
+	<head>
+		<title>Falling Blocks</title>
+		<style>
+			#game {
+				width: 600px;
+				height: 600px;
+				border: 1px solid black;
+				background-color: #ccc;
+				position: relative;
+			}
+			.block {
+				width: 40px;
+				height: 20px;
+				border: 3px solid firebrick;
+				position: absolute;
+                background-color: firebrick;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="game"></div>
+        <h1 id="score"></h1>
+        <h1 id="highscore"></h1>
+        <button id="button">Start Game</button>
+		<script>
+			/*
+			TODO
+				1. Remove blocks which have fallen off the bottom of the game
+				2. If the mouse is touching a block make the user lose
+				
+			OPTIONAL
+				1. make blocks appear faster and move faster as the game progresses
+				2. keep score so the user knows how well they are doing
+				3. write a more intelligent algorithm which will spawn the blocks intelligently instead of randomly
+			*/
+			
+document.getElementById("button").onclick = function(){            
+            var updateCount = 0;
+            var mod = 50;
+            var highScore = 0;
+			var mouse = {
+				x: 0,
+				y: 0
+			};
+			
+			var blocks = [
+				{
+					x : 100,
+					y : 0,
+					element: null
+				},
+				{
+					x: 350,
+					y: 100,
+					element: null
+				}
+			];
+			
+			setInterval(function(){mod= mod -2;}, 1000);
+            
+			function update() {
+				for (var i =0; i < blocks.length; i++) {
+					blocks[i].y += 6;
+				    if (blocks[i].y > 580){
+                    document.getElementById("game").removeChild(blocks[i].element);
+                    blocks.splice(i, 1);
+                    };
+                    var score = Math.floor(updateCount/30)
+                    document.getElementById("score").innerHTML = score;
+                    if (isCollidingMouse(blocks[i]) == true){
+                        if (score>highScore){highScore=score};
+                    updateCount=0; 
+                    mod=80;
+                    document.getElementById("highscore").innerHTML = highScore;
+                    
+                    };
+                    
+                };
+                
+				if (updateCount % mod == 0) {
+					addBlock();
+                    addBlock();
+				}
+			}
+			
+			function draw() {
+				for (var i =0; i < blocks.length; i++) {
+					blocks[i].element.style.top = blocks[i].y + "px";
+					blocks[i].element.style.left = blocks[i].x + "px";
+				}
+			}
+			 
+            
+    
+            function addBlock() {
+				var block = {
+					x : Math.random() * 560,
+					y : 0
+				};
+				var div = createBlockDiv();
+				block.element = div;
+				document.getElementById("game").appendChild(div);
+				blocks.push(block);
+			}
+			
+			function createBlockDiv() {
+				var div = document.createElement("div");
+				div.className = "block";
+				return div;
+			}
+			
+			function init() {
+				for (var i = 0; i < blocks.length; i++){
+					var div = createBlockDiv();
+					blocks[i].element = div;
+					document.getElementById("game").appendChild(div);
+				}
+			}
+			
+			function isCollidingMouse(block) {
+				return (mouse.x > block.x &&
+					mouse.x < block.x + 40 &&
+					mouse.y > block.y &&
+					mouse.y < block.y + 20);
+			}
+			
+			init();
+			
+			setInterval(function() {
+				updateCount++;
+				update();
+				draw();
+			}, 16);
+			
+			document.getElementById("game").onmousemove = function(evt) {
+				var game = document.getElementById("game");
+				mouse.x = evt.clientX - game.offsetLeft;
+				mouse.y = evt.clientY - game.offsetTop;
+			};
+        };
+           
+		</script>
+	</body>
+</html>
+
+
+
+
+
+
